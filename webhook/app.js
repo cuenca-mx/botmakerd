@@ -28,11 +28,10 @@ exports.lambdaHandler = (event, context, callback) => {
     var params = {
         TableName: "botmakerd"
     }
+
     switch (event.httpMethod) {
-        case 'GET':
-            dynamo.scan(params, done);
-            break;
         case 'POST':
+            console.log (JSON.parse(event.body))
             params["Item"] = JSON.parse(event.body);
             dynamo.putItem(params, done);
             break;

@@ -28,7 +28,7 @@ This is a sample template for botmakerd - Below is a brief explanation of what w
 **Invoking function locally using a local sample payload**
 
 ```bash
-sam local invoke HelloWorldFunction --event event.json
+sam local invoke WebHookFunction --event event.json
 ```
  
 **Invoking function locally through local API Gateway**
@@ -44,7 +44,7 @@ If the previous command ran successfully you should now be able to hit the follo
 ```yaml
 ...
 Events:
-    HelloWorld:
+    WebHook:
         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
         Properties:
             Path: /hello
@@ -57,7 +57,7 @@ AWS Lambda NodeJS runtime requires a flat folder with all dependencies including
 
 ```yaml
 ...
-    HelloWorldFunction:
+    WebHookFunction:
         Type: AWS::Serverless::Function
         Properties:
             CodeUri: webhook/
@@ -94,7 +94,7 @@ After deployment is complete you can run the following command to retrieve the A
 ```bash
 aws cloudformation describe-stacks \
     --stack-name botmakerd \
-    --query 'Stacks[].Outputs[?OutputKey==`HelloWorldApi`]' \
+    --query 'Stacks[].Outputs[?OutputKey==`WebHookApi`]' \
     --output table
 ``` 
 
@@ -105,7 +105,7 @@ To simplify troubleshooting, SAM CLI has a command called sam logs. sam logs let
 `NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
 
 ```bash
-sam logs -n HelloWorldFunction --stack-name botmakerd --tail
+sam logs -n WebHookFunction --stack-name botmakerd --tail
 ```
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
@@ -136,7 +136,7 @@ Here are a few things you can try to get more acquainted with building serverles
 
 * Uncomment lines on `app.js`
 * Build the project with ``sam build --use-container``
-* Invoke with ``sam local invoke HelloWorldFunction --event event.json``
+* Invoke with ``sam local invoke WebHookFunction --event event.json``
 * Update tests
 
 ### Create an additional API resource
@@ -174,7 +174,7 @@ All commands used throughout this document
 
 ```bash
 # Invoke function locally with event.json as an input
-sam local invoke HelloWorldFunction --event event.json
+sam local invoke WebHookFunction --event event.json
 
 # Run API Gateway locally
 sam local start-api
@@ -196,11 +196,11 @@ sam deploy \
 # Describe Output section of CloudFormation stack previously created
 aws cloudformation describe-stacks \
     --stack-name botmakerd \
-    --query 'Stacks[].Outputs[?OutputKey==`HelloWorldApi`]' \
+    --query 'Stacks[].Outputs[?OutputKey==`WebHookApi`]' \
     --output table
 
 # Tail Lambda function Logs using Logical name defined in SAM Template
-sam logs -n HelloWorldFunction --stack-name botmakerd --tail
+sam logs -n WebHookFunction --stack-name botmakerd --tail
 ```
 
 **NOTE**: Alternatively this could be part of package.json scripts section.
