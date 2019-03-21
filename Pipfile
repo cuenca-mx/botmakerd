@@ -1,0 +1,14 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+boto3 = "==1.9.118"
+pytest = "==4.3.1"
+pytest-mock = "==1.10.1"
+
+[requires]
+python_version = "2.7"

@@ -10,7 +10,7 @@ def apigw_event():
     """ Generates API GW Event"""
 
     return {
-        "body": '{ "_id_": "1", "name": "Kercy Diaz"}',
+        "body": '{ "_id_": "1", "name": "Keryc Diaz"}',
         "resource": "/{proxy+}",
         "requestContext": {
             "resourceId": "123456",
