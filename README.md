@@ -4,21 +4,23 @@ This is a sample template for botmakerd - Below is a brief explanation of what w
 
 ```bash
 .
-├── README.MD                   <-- This instructions file
+├── README.md                   <-- This instructions file
 ├── event.json                  <-- API Gateway Proxy Integration event payload
 ├── webhook                 <-- Source code for a lambda function
-│   └── app.js                  <-- Lambda function code
-│   └── package.json            <-- NodeJS dependencies and scripts
-│   └── tests                   <-- Unit tests
-│       └── unit
-│           └── test-handler.js
-├── template.yaml               <-- SAM template
+│   ├── __init__.py
+│   ├── app.py                  <-- Lambda function code
+│   ├── requirements.txt        <-- Lambda function code
+├── template.yaml               <-- SAM Template
+└── tests                       <-- Unit tests
+    └── unit
+        ├── __init__.py
+        └── test_handler.py
 ```
 
 ## Requirements
 
 * AWS CLI already configured with Administrator permission
-* [NodeJS 8.10+ installed](https://nodejs.org/en/download/)
+* [Python 3 installed](https://www.python.org/downloads/)
 * [Docker installed](https://www.docker.com/community-edition)
 
 ## Setup process
@@ -30,14 +32,14 @@ This is a sample template for botmakerd - Below is a brief explanation of what w
 ```bash
 sam local invoke WebHookFunction --event event.json
 ```
- 
+
 **Invoking function locally through local API Gateway**
 
 ```bash
 sam local start-api
 ```
 
-If the previous command ran successfully you should now be able to hit the following local endpoint to invoke your function `http://localhost:3000/hello`
+If the previous command ran successfully you should now be able to hit the following local endpoint to invoke your function `http://localhost:3000/webhook`
 
 **SAM CLI** is used to emulate both Lambda and API Gateway locally and uses our `template.yaml` to understand how to bootstrap this environment (runtime, where the source code is, etc.) - The following excerpt is what the CLI will read in order to initialize an API and its routes:
 
@@ -47,13 +49,13 @@ Events:
     WebHook:
         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
         Properties:
-            Path: /hello
+            Path: /webhook
             Method: get
 ```
 
 ## Packaging and deployment
 
-AWS Lambda NodeJS runtime requires a flat folder with all dependencies including the application. SAM will use `CodeUri` property to know where to look up for both application and dependencies:
+AWS Lambda Python runtime requires a flat folder with all dependencies including the application. SAM will use `CodeUri` property to know where to look up for both application and dependencies:
 
 ```yaml
 ...
@@ -112,12 +114,12 @@ You can find more information and examples about filtering Lambda function logs 
 
 ## Testing
 
-We use `mocha` for testing our code and it is already added in `package.json` under `scripts`, so that we can simply run the following command to run our tests:
+
+Next, we install test dependencies and we run `pytest` against our `tests` folder to run our initial unit tests:
 
 ```bash
-cd webhook
-npm install
-npm run test
+pip install pytest pytest-mock --user
+python -m pytest tests/ -v
 ```
 
 ## Cleanup
@@ -134,27 +136,27 @@ Here are a few things you can try to get more acquainted with building serverles
 
 ### Learn how SAM Build can help you with dependencies
 
-* Uncomment lines on `app.js`
+* Uncomment lines on `app.py`
 * Build the project with ``sam build --use-container``
 * Invoke with ``sam local invoke WebHookFunction --event event.json``
 * Update tests
 
 ### Create an additional API resource
 
-* Create a catch all resource (e.g. /hello/{proxy+}) and return the name requested through this new path
+* Create a catch all resource (e.g. /webhook/{proxy+}) and return the name requested through this new path
 * Update tests
 
 ### Step-through debugging
 
 * **[Enable step-through debugging docs for supported runtimes]((https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-using-debugging.html))**
 
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond hello world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
+Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond webhook world samples and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)
 
 # Appendix
 
 ## Building the project
 
-[AWS Lambda requires a flat folder](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-create-deployment-pkg.html) with the application as well as its dependencies in a node_modules folder. When you make changes to your source code or dependency manifest,
+[AWS Lambda requires a flat folder](https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html) with the application as well as its dependencies in  deployment package. When you make changes to your source code or dependency manifest,
 run the following command to build your project local testing and deployment:
 
 ```bash
@@ -173,6 +175,9 @@ By default, this command writes built artifacts to `.aws-sam/build` folder.
 All commands used throughout this document
 
 ```bash
+# Generate event.json via generate-event command
+sam local generate-event apigateway aws-proxy > event.json
+
 # Invoke function locally with event.json as an input
 sam local invoke WebHookFunction --event event.json
 
@@ -203,4 +208,3 @@ aws cloudformation describe-stacks \
 sam logs -n WebHookFunction --stack-name botmakerd --tail
 ```
 
-**NOTE**: Alternatively this could be part of package.json scripts section.

@@ -4,7 +4,7 @@ Description: >
   botmakerd
 
   Sample SAM Template for botmakerd
-  
+
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
@@ -15,8 +15,8 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: webhook/
-      Handler: app.lambdaHandler
-      Runtime: nodejs8.10
+      Handler: app.lambda_handler
+      Runtime: python3.7
       Events:
         WebHook:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -43,11 +43,11 @@ Outputs:
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   WebHookApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Description: "API Gateway endpoint URL for Prod stage for WebHook function"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/webhook/"
   WebHookFunction:
-    Description: "Hello World Lambda Function ARN"
+    Description: "WebHook Lambda Function ARN"
     Value: !GetAtt WebHookFunction.Arn
   WebHookFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
+    Description: "Implicit IAM Role created for WebHook function"
     Value: !GetAtt WebHookFunctionRole.Arn
