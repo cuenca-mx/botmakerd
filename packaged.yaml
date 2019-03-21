@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'botmakerd
+
+  Sample SAM Template for botmakerd
+
+  '
+Globals:
+  Function:
+    Timeout: 3
+Resources:
+  WebHookFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: s3://botmakerd.cuenca.io/c1df724bdae12c5ffc2b681798f5a127
+      Handler: app.lambda_handler
+      Runtime: python3.7
+      Events:
+        WebHook:
+          Type: Api
+          Properties:
+            Path: /webhook
+            Method: ANY
+      Policies:
+      - Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - dynamodb:PutItem
+          Resource:
+            Fn::Join:
+            - ''
+            - - 'arn:aws:dynamodb:'
+              - Ref: AWS::Region
+              - ':'
+              - Ref: AWS::AccountId
+              - :table/*
+Outputs:
+  WebHookApi:
+    Description: API Gateway endpoint URL for Prod stage for WebHook function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/webhook/
+  WebHookFunction:
+    Description: WebHook Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - WebHookFunction
+      - Arn
+  WebHookFunctionIamRole:
+    Description: Implicit IAM Role created for WebHook function
+    Value:
+      Fn::GetAtt:
+      - WebHookFunctionRole
+      - Arn

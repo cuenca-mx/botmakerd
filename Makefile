@@ -2,9 +2,13 @@ define USAGE
 Super awesome hand-crafted build system ⚙️
 
 Commands:
-	init      Install Python dependencies with pipenv
-	test      Coming Soon (Run linters, test db migrations and tests.)
-	serve     Run app in dev environment (localhost:3000).
+	init     		Install Python dependencies with pipenv
+	test     		Run linters, test db migrations and tests.
+	serve    		Run app in dev environment (localhost:3000).
+	invoke   		Invoke function with event.json as an input
+	new-bucket MY_BUCKET    Create S3 bucket
+	package MY_BUCKET   	Package Lambda function and upload to S3
+	deploy MY_BUCKET   	Deploy SAM template as a CloudFormation stack
 endef
 
 export USAGE
@@ -33,3 +37,17 @@ serve: check-pipenv
 
 invoke: check-pipenv
 	pipenv run sam local invoke WebHookFunction --event event.json
+
+new-bucket:
+	aws s3 mb s3://$(filter-out $@,$(MAKECMDGOALS))
+
+package:
+	sam package \
+    --output-template-file packaged.yaml \
+    --s3-bucket $(filter-out $@,$(MAKECMDGOALS))
+
+deploy:
+	sam deploy \
+    --template-file packaged.yaml \
+    --stack-name botmakerd \
+    --capabilities CAPABILITY_IAM
